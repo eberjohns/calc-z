@@ -1,3 +1,4 @@
+import 'package:calc_z/logic.dart';
 import 'package:flutter/material.dart';
 
 class Homepage extends StatefulWidget {
@@ -8,12 +9,25 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+  void changeDisplayText(String text) {
+    if (text == 'C') {
+      clear();
+    } else if (text == '⌫') {
+      backspace();
+    } else if (text == '=') {
+      calculate();
+    } else {
+      append(text);
+    }
+    setState(() {});
+  }
+
   Widget buildButton({required String label, bool isOperator = false}) {
     return SizedBox(
-      // width: 100,
-      // height: 100,
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          changeDisplayText(label);
+        },
         style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
         child: Text(
           label,
@@ -50,16 +64,35 @@ class _HomepageState extends State<Homepage> {
 
   Widget display() {
     return Container(
+      color: const Color.fromARGB(255, 15, 15, 15),
       width: double.infinity,
-      height: 300,
       padding: const EdgeInsets.all(20),
       alignment: Alignment.bottomRight,
-      child: Text(
-        '0',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 50,
-          fontWeight: FontWeight.bold,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              // Display typed numbers
+              displayText != '' ? displayText : '0',
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 50,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              resultText != '' ? '= $resultText' : '',
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                color: const Color.fromARGB(202, 255, 255, 255),
+                fontSize: 40,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -85,13 +118,20 @@ class _HomepageState extends State<Homepage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            display(),
-            makeRow(buttonLabels: ['C', '⌫', '%', '÷']),
-            makeRow(buttonLabels: ['7', '8', '9', '×']),
-            makeRow(buttonLabels: ['4', '5', '6', '−']),
-            makeRow(buttonLabels: ['1', '2', '3', '+']),
-            makeRow(buttonLabels: ['^', '0', '.', '=']),
-            SizedBox(height: 10), // Add some space at the bottom
+            Expanded(flex: 8, child: display()),
+            Expanded(
+              flex: 9,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  makeRow(buttonLabels: ['C', '⌫', '%', '÷']),
+                  makeRow(buttonLabels: ['7', '8', '9', '×']),
+                  makeRow(buttonLabels: ['4', '5', '6', '−']),
+                  makeRow(buttonLabels: ['1', '2', '3', '+']),
+                  makeRow(buttonLabels: ['^', '0', '.', '=']),
+                ],
+              ),
+            ), // Add some space at the bottom
           ],
         ),
       ),
