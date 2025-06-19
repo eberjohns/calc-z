@@ -17,7 +17,25 @@ class _HomepageState extends State<Homepage> {
     } else if (text == '=') {
       calculate();
     } else {
-      append(text);
+      switch (text) {
+        case '÷':
+          append('/', '÷');
+          break;
+        case '×':
+          append('*', '×');
+          break;
+        case '−':
+          append('-', '−');
+          break;
+        case '^':
+          append('^', '^');
+          break;
+        case '%':
+          append('%', '%');
+          break;
+        default:
+          append(text); // uses same logic & visible character
+      }
     }
     setState(() {});
   }
@@ -75,7 +93,7 @@ class _HomepageState extends State<Homepage> {
           children: [
             Text(
               // Display typed numbers
-              displayText != '' ? displayText : '0',
+              userVisibleText != '' ? userVisibleText : '0',
               textAlign: TextAlign.right,
               style: TextStyle(
                 color: Colors.white,
