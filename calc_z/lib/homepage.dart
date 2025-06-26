@@ -10,31 +10,60 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   void changeDisplayText(String text) {
-    if (text == 'C') {
-      clear();
-    } else if (text == '⌫') {
+    // if (text == 'C') {
+    //   clear();
+    // } else
+    if (text == '⌫') {
       backspace();
-    } else if (text == '=') {
       calculate();
+      // } else if (text == '=') {
+      //   calculate();
     } else {
       switch (text) {
         case '÷':
+          if (checkLastIsOperator()) backspace();
           append('/', '÷');
           break;
         case '×':
+          if (checkLastIsOperator()) backspace();
           append('*', '×');
           break;
         case '−':
+          if (checkLastIsOperator()) backspace();
           append('-', '−');
           break;
         case '^':
+          if (checkLastIsOperator()) backspace();
           append('^', '^');
           break;
         case '%':
+          if (checkLastIsOperator()) backspace();
           append('%', '%');
           break;
+        case '+':
+          if (checkLastIsOperator()) backspace();
+          append('+', '+');
+          break;
+        case '(':
+          // if (checkLastIsOperator()) backspace();
+          append('(', '(');
+          break;
+        case ')':
+          // if (checkLastIsOperator()) backspace();
+          append(')', ')');
+          calculate();
+          break;
         default:
-          append(text); // uses same logic & visible character
+          String currentNumber = getCurrentNumberSegment();
+          // Count only actual digits (remove decimal point for length check)
+          int digitCount = currentNumber.replaceAll('.', '').length;
+
+          // If the current number already has 10 digits, prevent appending
+          if (digitCount >= 10) {
+            break; // Do nothing if limit reached
+          }
+          append(text); // Append the digit or other character
+          calculate(); // Numbers always trigger recalculation
       }
     }
     setState(() {});
@@ -45,6 +74,12 @@ class _HomepageState extends State<Homepage> {
       child: ElevatedButton(
         onPressed: () {
           changeDisplayText(label);
+        },
+        onLongPress: () {
+          if (label == '⌫') {
+            clear();
+            setState(() {});
+          }
         },
         style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
         child: Text(
@@ -66,7 +101,7 @@ class _HomepageState extends State<Homepage> {
         return buildButton(
           label: label,
           isOperator:
-              label == 'C' ||
+              // label == 'C' ||
               label == '⌫' ||
               label == '÷' ||
               label == '×' ||
@@ -74,7 +109,9 @@ class _HomepageState extends State<Homepage> {
               label == '+' ||
               label == '^' ||
               label == '%' ||
-              label == '=',
+              // label == '=' ||
+              label == '(' ||
+              label == ')',
         );
       }).toList(),
     );
@@ -142,11 +179,11 @@ class _HomepageState extends State<Homepage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  makeRow(buttonLabels: ['C', '⌫', '%', '÷']),
-                  makeRow(buttonLabels: ['7', '8', '9', '×']),
-                  makeRow(buttonLabels: ['4', '5', '6', '−']),
-                  makeRow(buttonLabels: ['1', '2', '3', '+']),
-                  makeRow(buttonLabels: ['^', '0', '.', '=']),
+                  makeRow(buttonLabels: ['(', ')', '⌫', '%']),
+                  makeRow(buttonLabels: ['7', '8', '9', '÷']),
+                  makeRow(buttonLabels: ['4', '5', '6', '×']),
+                  makeRow(buttonLabels: ['1', '2', '3', '−']),
+                  makeRow(buttonLabels: ['^', '0', '.', '+']),
                 ],
               ),
             ), // Add some space at the bottom
